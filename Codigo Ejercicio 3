@@ -57,12 +57,12 @@ void setup()
 
 void loop()
 {
-  int fotoresistencia = analogRead(A2);
-  lecturaTemperaturaSwitch = digitalRead(switchTemperatura);
+  int fotoresistencia = analogRead(A2); //Leo el valor de la fotoresistencia
+  lecturaTemperaturaSwitch = digitalRead(switchTemperatura); //Leo el switch de la temperatura (si quiero que se lea la temperatura o el cotnador)
   int lecturaTemperatura;
   lecturaTemperatura = analogRead(A1);
   int temperatura = map(lecturaTemperatura, 20, 358, -40, 125); // map(lectura de entrada, inicio de lectura, final de lectura, inicio de salida, final de salida)
-  if (temperatura >0 and temperatura <30)
+  if (temperatura >0 and temperatura <30) //Si la temepratura se encuentra entre este rango hace que el motor se encienda y envie energia
   {
     digitalWrite(salidaMotor, HIGH);
     energia = 1;
@@ -72,13 +72,14 @@ void loop()
     digitalWrite(salidaMotor, LOW);
     digitalPrint(10);
     energia = 0;
-    if (fotoresistencia < 509) //Si la fotoresistencia recibe mas de la mitad de la luz que puede recibir hace que reciba la suficiente energia como para prender el contador, pero no el motor
+    Serial.println(fotoresistencia);
+    if (fotoresistencia > 867)
     {
+      //map(fotoresistencia, 1022, 713, 5, 3.5);
       energia = 1;
     }
     if (repetidor == 1)
     {
-      Serial.println("Para que el motor se encienda debe haber una temperatura mayor a 0 grados y menor a 30 grados");
       repetidor = 0;
     }
     
@@ -95,11 +96,11 @@ void loop()
     }
     if (temperatura >9 and temperatura <100)
     {
-      String strTemperatura;
-      char charTemperatura[2];
-      strTemperatura += temperatura;
-      strTemperatura.toCharArray(charTemperatura, 5);
-      int temperaturaDecimal = charTemperatura[0] - '0';
+      String strTemperatura; //Defino el String de temperatura
+      char charTemperatura[2]; //Defino el Char de la temperatura que va a ser de rango 2
+      strTemperatura += temperatura; // Paso el INT de temepratura al String
+      strTemperatura.toCharArray(charTemperatura, 5); //Paso de temperatura a Char para asi luego poder obtener el indice decimal y de unidad
+      int temperaturaDecimal = charTemperatura[0] - '0'; //Obtengo el decimal de la temperatura (en Char) y luego lo paso a tipo INT para asi poder mostrarlo en el contador (lo mismo con la unidad)
       int temperaturaUnidad = charTemperatura[1] - '0';
       digitalWrite(gndUnidad, HIGH);
       digitalWrite(gndDecimal, LOW);
@@ -109,7 +110,7 @@ void loop()
       digitalWrite(gndUnidad, LOW);
       digitalPrint(temperaturaUnidad);
       delay(10);
-      strTemperatura = "";
+      strTemperatura = ""; //Paso la variable en blanco asi no se acumula cada ves que pase por aca
     }
   }
   else
